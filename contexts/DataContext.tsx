@@ -3,6 +3,8 @@ import useLocalStorage from '../hooks/useLocalStorage';
 import { Speaker, Visit, Host, CustomMessageTemplates, CustomHostRequestTemplates, Language, MessageType, MessageRole, UnavailabilityPeriod, TalkHistory } from '../types';
 import { initialSpeakers, initialHosts, UNASSIGNED_HOST, initialVisits } from '../constants';
 import { useToast } from './ToastContext';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 
 // Define the shape of the data and actions provided by the context.
 interface DataContextType {
@@ -383,30 +385,65 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addToast("Modèle par défaut restauré pour la demande d'accueil.", 'info');
     }, [setCustomHostRequestTemplates, addToast]);
 
-    const exportData = useCallback(() => {
-        const data = {
-            speakers,
-            visits,
-            hosts,
-            archivedVisits,
-            customTemplates,
-            customHostRequestTemplates,
-            googleSheetId,
-            googleApiKey,
-            notifiedVisits: JSON.parse(localStorage.getItem('notifiedVisits') || '{}')
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
+    const exportData = useCallback(async () => {
+        try {
+            const data = {
+                speakers,
+                visits,
+                hosts,
+                archivedVisits,
+                customTemplates,
+                customHostRequestTemplates,
+                googleSheetId,
+                googleApiKey,
+            };
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const fileName = `kbv-backup-${new Date().toISOString().split('T')[0]}.json`;
+
+            if (Capacitor.isNativePlatform()) {
+                // Sur Android, enregistrer dans le dossier Documents
+                try {
+                    const result = await Filesystem.writeFile({
+                        path: `Documents/${fileName}`,
+                        data: dataStr,
+                        directory: Directory.Documents,
+                        encoding: Encoding.UTF8,
+                        recursive: true
+                    });
+                    
+                    addToast(`Sauvegarde réussie dans le dossier Documents : ${fileName}`, 'success');
+                } catch (error) {
+                    console.error('Erreur lors de la sauvegarde sur le stockage local:', error);
+                    addToast('Erreur lors de la sauvegarde sur le stockage local', 'error');
+                    
+                    // Fallback au téléchargement standard en cas d'erreur
+                    downloadFile(dataStr, fileName);
+                }
+            } else {
+                // Sur le web, utiliser le téléchargement standard
+                downloadFile(dataStr, fileName);
+                addToast('Données exportées avec succès !', 'success');
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'export des données:', error);
+            addToast('Erreur lors de l\'export des données', 'error');
+        }
+    }, [speakers, visits, hosts, archivedVisits, customTemplates, customHostRequestTemplates, googleSheetId, googleApiKey, addToast]);
+
+    // Fonction utilitaire pour le téléchargement de fichier
+    const downloadFile = (data: string, fileName: string) => {
+        const dataBlob = new Blob([data], { type: 'application/json' });
+        const dataUrl = URL.createObjectURL(dataBlob);
+
         const a = document.createElement('a');
-        a.href = url;
-        const date = new Date().toISOString().slice(0, 10);
-        a.download = `gestion_visiteurs_tj_backup_${date}.json`;
+        a.href = dataUrl;
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        addToast("Données exportées avec succès.", 'success');
-    }, [speakers, visits, hosts, archivedVisits, customTemplates, customHostRequestTemplates, googleSheetId, googleApiKey, addToast]);
+        URL.revokeObjectURL(dataUrl);
+    };
 
     const importData = useCallback((data: any) => {
         if (!data.speakers || !data.visits || !data.hosts) {

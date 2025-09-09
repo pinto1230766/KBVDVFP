@@ -152,10 +152,20 @@ const InsightCard: React.FC<{ title: string; icon: React.FC<any>; children: Reac
 export const Dashboard: React.FC<DashboardProps> = ({ onScheduleVisitClick, onAddSpeakerClick, onAddHostClick, onEditVisitClick }) => {
     const { hosts, speakers, archivedVisits, upcomingVisits } = useData();
 
-    const visitsNeedingHost = useMemo(() =>
-        upcomingVisits.filter(v => v.host === UNASSIGNED_HOST && v.status !== 'cancelled' && v.locationType !== 'zoom' && !v.congregation.toLowerCase().includes('lyon')),
-        [upcomingVisits]
-    );
+    const visitsNeedingHost = useMemo(() => {
+        const now = new Date();
+        const twoMonthsFromNow = new Date();
+        twoMonthsFromNow.setMonth(now.getMonth() + 2);
+        
+        return upcomingVisits.filter(v => {
+            const visitDate = new Date(v.visitDate + 'T00:00:00');
+            return v.host === UNASSIGNED_HOST && 
+                   v.status !== 'cancelled' && 
+                   v.locationType !== 'zoom' && 
+                   !v.congregation.toLowerCase().includes('lyon') &&
+                   visitDate <= twoMonthsFromNow;
+        });
+    }, [upcomingVisits]);
 
     const nextVisit = upcomingVisits[0];
     
@@ -183,18 +193,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ onScheduleVisitClick, onAd
 
     const topSpeakers = useMemo(() => {
         const speakerVisitCounts = archivedVisits.reduce((acc, visit) => {
-            acc[visit.id] = (acc[visit.id] || 0) + 1;
+            const speakerId = visit.id || '';
+            acc[speakerId] = (acc[speakerId] || 0) + 1;
             return acc;
         }, {} as Record<string, number>);
 
         return Object.entries(speakerVisitCounts)
-            .sort(([, a], [, b]) => b - a)
+            .sort((a, b) => (b[1] as number) - (a[1] as number))
             .slice(0, 3)
             .map(([speakerId, count]) => ({
                 speaker: speakers.find(s => s.id === speakerId),
-                count
+                count: count as number
             }))
-            .filter(item => item.speaker);
+            .filter((item): item is { speaker: any; count: number } => !!item.speaker);
     }, [archivedVisits, speakers]);
 
     const topHosts = useMemo(() => {
@@ -207,13 +218,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onScheduleVisitClick, onAd
         }, {} as Record<string, number>);
 
         return Object.entries(hostVisitCounts)
-            .sort(([, a], [, b]) => b - a)
+            .sort((a, b) => (b[1] as number) - (a[1] as number))
             .slice(0, 3)
             .map(([hostName, count]) => ({
                 host: hosts.find(h => h.nom === hostName),
-                count
+                count: count as number
             }))
-            .filter(item => item.host);
+            .filter((item): item is { host: any; count: number } => !!item.host);
     }, [archivedVisits, upcomingVisits, hosts]);
 
 

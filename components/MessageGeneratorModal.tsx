@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Visit, Language, MessageType, MessageRole } from '../types';
-import { messageTemplates } from '../constants';
-import { XIcon, CopyIcon, WhatsAppIcon, ChevronDownIcon, SaveIcon, ArrowUturnLeftIcon, SparklesIcon, SpinnerIcon } from './Icons';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Visit, Language, MessageType, MessageRole, Host } from '../types';
+import { messageTemplates, UNASSIGNED_HOST } from '../constants';
+import { XIcon, CopyIcon, WhatsAppIcon, ChevronDownIcon, SaveIcon, ArrowUturnLeftIcon, SparklesIcon, SpinnerIcon, UserIcon } from './Icons';
 import { useToast } from '../contexts/ToastContext';
 import { useData } from '../contexts/DataContext';
 import { LanguageSelector } from './LanguageSelector';
 import { GoogleGenAI } from '@google/genai';
+import { BrotherSearch } from './BrotherSearch';
 
 interface MessageGeneratorModalProps {
   isOpen: boolean;
@@ -45,10 +46,18 @@ export const MessageGeneratorModal: React.FC<MessageGeneratorModalProps> = ({
 
   const [isCustomTemplateLoaded, setIsCustomTemplateLoaded] = useState(false);
   const [originalTemplateText, setOriginalTemplateText] = useState('');
+  const [selectedHost, setSelectedHost] = useState<Host | null>(null);
   
   const speaker = speakers.find(s => s.id === visit.id);
-  const host = hosts.find(h => h.nom === visit.host);
-  const currentRecipient = role === 'speaker' ? speaker : host;
+  const host = useMemo(() => hosts.find(h => h.nom === visit.host), [hosts, visit.host]);
+  const currentRecipient = role === 'speaker' ? speaker : (selectedHost || host);
+
+  // Mettre à jour le sélectionné quand l'hôte change
+  useEffect(() => {
+    if (host) {
+      setSelectedHost(host);
+    }
+  }, [host]);
 
   const generateMessage = useCallback(() => {
     const customTemplate = customTemplates[language]?.[messageType]?.[role];
@@ -58,8 +67,9 @@ export const MessageGeneratorModal: React.FC<MessageGeneratorModalProps> = ({
     setIsCustomTemplateLoaded(!!customTemplate);
 
     let generated = template;
+    const currentHost = selectedHost || host;
 
-    if (role === 'host' && host?.gender === 'female') {
+    if (role === 'host' && currentHost?.gender === 'female') {
         generated = generated.replace(/Frère/g, 'Sœur').replace(/frère/g, 'sœur');
         generated = generated.replace(/frères/g, 'sœurs');
         generated = generated.replace(/Irmon/g, 'Irmã');
@@ -67,12 +77,12 @@ export const MessageGeneratorModal: React.FC<MessageGeneratorModalProps> = ({
     }
 
     generated = generated.replace(/{speakerName}/g, visit.nom);
-    generated = generated.replace(/{hostName}/g, visit.host);
+    generated = generated.replace(/{hostName}/g, currentHost?.nom || visit.host);
     generated = generated.replace(/{visitDate}/g, formatFullDate(visit.visitDate));
     generated = generated.replace(/{visitTime}/g, visit.visitTime);
     generated = generated.replace(/{speakerPhone}/g, speaker?.telephone || '(non renseigné)');
-    generated = generated.replace(/{hostPhone}/g, host?.telephone || '(non renseigné)');
-    generated = generated.replace(/{hostAddress}/g, host?.address || '(non renseignée)');
+    generated = generated.replace(/{hostPhone}/g, currentHost?.telephone || '(non renseigné)');
+    generated = generated.replace(/{hostAddress}/g, currentHost?.address || '(non renseignée)');
     
     setMessageText(generated);
     setOriginalTemplateText(generated);
@@ -120,11 +130,13 @@ export const MessageGeneratorModal: React.FC<MessageGeneratorModalProps> = ({
   };
 
   const handleSendWhatsApp = () => {
-    if (!currentRecipient?.telephone) {
-      addToast(`Le numéro de téléphone pour ${currentRecipient?.nom} n'est pas renseigné.`, 'error');
+    const recipient = role === 'host' && selectedHost ? selectedHost : currentRecipient;
+    
+    if (!recipient?.telephone) {
+      addToast(`Le numéro de téléphone pour ${recipient?.nom || 'le destinataire'} n'est pas renseigné.`, 'error');
       return;
     }
-    const phoneNumber = currentRecipient.telephone.replace(/\D/g, '');
+    const phoneNumber = recipient.telephone.replace(/\D/g, '');
     const encodedMessage = encodeURIComponent(messageText);
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
     handleActionAndConfirm();
@@ -225,6 +237,31 @@ export const MessageGeneratorModal: React.FC<MessageGeneratorModalProps> = ({
                     </label>
                     <LanguageSelector lang={language} setLang={onLanguageChange} isContained={true} />
                 </div>
+                
+                {role === 'host' && (
+                    <div>
+                        <label className="block text-sm font-medium text-text-muted dark:text-text-muted-dark mb-2">
+                            Personne pour l'accueil
+                        </label>
+                        <BrotherSearch<Host>
+                            items={hosts}
+                            onSelect={(host) => {
+                                setSelectedHost(host);
+                                // Mettre à jour le message avec le nouvel hôte
+                                setTimeout(generateMessage, 100);
+                            }}
+                            placeholder="Rechercher un frère pour l'accueil..."
+                            getItemName={(host) => host.nom}
+                            getItemDetails={(host) => `${host.telephone || 'Téléphone non renseigné'}`}
+                        />
+                        {selectedHost && (
+                            <div className="mt-2 flex items-center gap-2 text-sm text-text-muted dark:text-text-muted-dark">
+                                <UserIcon className="w-4 h-4" />
+                                <span>{selectedHost.nom} • {selectedHost.telephone || 'Téléphone non renseigné'}</span>
+                            </div>
+                        )}
+                    </div>
+                )}
                 <div>
                      <div className="flex justify-between items-center">
                         <label htmlFor="messageType" className="block text-sm font-medium text-text-muted dark:text-text-muted-dark">

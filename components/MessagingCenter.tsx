@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Visit, MessageRole, Language, MessageType } from '../types';
-import { WhatsAppIcon, CopyIcon, UserIcon, SaveIcon, ArrowUturnLeftIcon, ChevronDownIcon } from './Icons';
+import { Visit, MessageRole, Language, MessageType, Host } from '../types';
+import { WhatsAppIcon, CopyIcon, UserIcon, SaveIcon, ArrowUturnLeftIcon, ChevronDownIcon, SearchIcon } from './Icons';
+import { BrotherSearch } from './BrotherSearch';
 import { hostRequestMessageTemplates, UNASSIGNED_HOST } from '../constants';
 import { useToast } from '../contexts/ToastContext';
 import { useData } from '../contexts/DataContext';
@@ -101,7 +102,20 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({ onOpenMessageG
     const [originalFrenchMessage, setOriginalFrenchMessage] = useState('');
     const [originalCapeVerdeanMessage, setOriginalCapeVerdeanMessage] = useState('');
 
-    const activeVisits = useMemo(() => upcomingVisits.filter(v => v.status !== 'cancelled'), [upcomingVisits]);
+    const activeVisits = useMemo(() => {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const twoMonthsFromNow = new Date();
+        twoMonthsFromNow.setMonth(now.getMonth() + 2);
+        twoMonthsFromNow.setHours(23, 59, 59, 999);
+
+        return upcomingVisits.filter(v => {
+            const visitDate = new Date(v.visitDate + 'T00:00:00');
+            return v.status !== 'cancelled' && 
+                   visitDate >= now && 
+                   visitDate <= twoMonthsFromNow;
+        });
+    }, [upcomingVisits]);
 
     useEffect(() => {
         if (activeVisits.length > 0 && !selectedVisitId) {
@@ -116,9 +130,20 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({ onOpenMessageG
     const selectedHost = useMemo(() => hosts.find(h => h.nom === selectedVisit?.host), [hosts, selectedVisit]);
 
     const visitsNeedingHosts = useMemo(() => {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const twoMonthsFromNow = new Date();
+        twoMonthsFromNow.setMonth(now.getMonth() + 2);
+        twoMonthsFromNow.setHours(23, 59, 59, 999);
+
         return upcomingVisits.filter(v => {
+            const visitDate = new Date(v.visitDate + 'T00:00:00');
             const isLocalSpeaker = v.congregation.toLowerCase().includes('lyon');
-            return v.host === UNASSIGNED_HOST && !isLocalSpeaker && v.status !== 'cancelled';
+            return v.host === UNASSIGNED_HOST && 
+                   !isLocalSpeaker && 
+                   v.status !== 'cancelled' &&
+                   visitDate >= now && 
+                   visitDate <= twoMonthsFromNow;
         });
     }, [upcomingVisits]);
 
@@ -255,28 +280,72 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({ onOpenMessageG
             <div className="bg-card-light dark:bg-card-dark rounded-xl shadow-lg p-6">
                 <h2 className="text-3xl font-bold text-secondary dark:text-primary-light mb-2">Centre de Rappels</h2>
                 <p className="text-text-muted dark:text-text-muted-dark mb-6">Gérez les rappels à J-7 pour les visites à venir.</p>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                     {activeVisits.length > 0 ? activeVisits.map(visit => (
-                        <div key={visit.visitId} className="p-4 bg-gray-50 dark:bg-dark rounded-lg">
-                            <div className="flex justify-between items-center mb-4">
-                                <div>
-                                    <h3 className="font-bold text-lg">{visit.nom}</h3>
-                                    <p className="text-sm text-text-muted dark:text-text-muted-dark">{formatDate(visit.visitDate)}</p>
+                <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {activeVisits.length > 0 ? (
+                        activeVisits.map(visit => {
+                            const visitHost = hosts.find(h => h.nom === visit.host);
+                            const [selectedReminderHost, setSelectedReminderHost] = useState<Host | null>(visitHost || null);
+                            
+                            const handleHostSelect = (host: Host) => {
+                                setSelectedReminderHost(host);
+                                // Mettre à jour le message avec le nouvel hôte
+                                setTimeout(() => {
+                                    onOpenMessageGenerator({
+                                        ...visit,
+                                        host: host.nom
+                                    }, 'host', 'reminder-7');
+                                }, 100);
+                            };
+                            
+                            return (
+                                <div key={visit.visitId} className="p-4 bg-gray-50 dark:bg-dark rounded-lg">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div>
+                                            <h3 className="font-bold text-lg">{visit.nom}</h3>
+                                            <p className="text-sm text-text-muted dark:text-text-muted-dark">{formatDate(visit.visitDate)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="text-center sm:text-left">
+                                            <p className="font-semibold mb-2">Orateur</p>
+                                            <button 
+                                                onClick={() => onOpenMessageGenerator(visit, 'speaker', 'reminder-7')} 
+                                                className="w-full sm:w-auto px-3 py-1.5 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 font-semibold"
+                                            >
+                                                Envoyer le rappel J-7
+                                            </button>
+                                        </div>
+                                        <div className="text-center sm:text-left">
+                                            <div className="mb-2">
+                                                <p className="font-semibold">Accueil</p>
+                                                <BrotherSearch<Host>
+                                                    items={hosts}
+                                                    onSelect={handleHostSelect}
+                                                    placeholder="Rechercher un frère..."
+                                                    getItemName={(h) => h.nom}
+                                                    getItemDetails={(h) => h.telephone || 'Téléphone non renseigné'}
+                                                    className="mt-1"
+                                                />
+                                            </div>
+                                            <button 
+                                                onClick={() => onOpenMessageGenerator({
+                                                    ...visit,
+                                                    host: selectedReminderHost?.nom || visit.host
+                                                }, 'host', 'reminder-7')} 
+                                                disabled={!selectedReminderHost}
+                                                className="w-full sm:w-auto px-3 py-1.5 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 font-semibold disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed"
+                                            >
+                                                Envoyer le rappel J-7
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="text-center sm:text-left">
-                                    <p className="font-semibold mb-2">Orateur</p>
-                                    <button onClick={() => onOpenMessageGenerator(visit, 'speaker', 'reminder-7')} className="w-full sm:w-auto px-3 py-1.5 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 font-semibold">Envoyer le rappel J-7</button>
-                                </div>
-                                <div className="text-center sm:text-left">
-                                    <p className="font-semibold mb-2">Accueil <span className="font-normal text-text-muted dark:text-text-muted-dark">({visit.host || 'Non assigné'})</span></p>
-                                    <button onClick={() => onOpenMessageGenerator(visit, 'host', 'reminder-7')} disabled={visit.host === UNASSIGNED_HOST} className="w-full sm:w-auto px-3 py-1.5 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 font-semibold disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed">Envoyer le rappel J-7</button>
-                                </div>
-                            </div>
-                        </div>
-                    )) : (
-                        <p className="text-center py-8 text-text-muted dark:text-text-muted-dark col-span-full">Aucune visite à venir pour envoyer des rappels.</p>
+                            );
+                        })
+                    ) : (
+                        <p className="text-center py-8 text-text-muted dark:text-text-muted-dark col-span-full">
+                            Aucune visite à venir pour envoyer des rappels.
+                        </p>
                     )}
                 </div>
             </div>

@@ -5,6 +5,26 @@ import { UNASSIGNED_HOST } from '../constants';
 import { useData } from '../contexts/DataContext';
 import { Avatar } from './Avatar';
 
+interface FilterButtonProps {
+    label: string;
+    value: string;
+    active: boolean;
+    onClick: (value: string) => void;
+}
+
+const FilterButton: React.FC<FilterButtonProps> = ({ label, value, active, onClick }) => (
+    <button
+        onClick={() => onClick(value)}
+        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+            active 
+                ? 'bg-primary text-white hover:bg-primary/90' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        }`}
+    >
+        {label}
+    </button>
+);
+
 // FIX: Define props interface for UpcomingVisits component.
 interface UpcomingVisitsProps {
     visits: Visit[];
@@ -16,7 +36,7 @@ interface UpcomingVisitsProps {
 }
 
 // Define types for state filtering.
-type DateFilterType = 'all' | 'week' | 'month';
+type DateFilterType = 'all' | 'week' | 'month' | '2months';
 type StatusFilterType = 'all' | 'pending' | 'confirmed' | 'cancelled';
 
 const formatMonth = (dateString: string) => new Date(dateString + 'T00:00:00').toLocaleDateString('fr-FR', { month: 'short' }).toUpperCase().replace('.', '');
@@ -274,7 +294,7 @@ export const UpcomingVisits: React.FC<UpcomingVisitsProps> = ({ visits, onEdit, 
             endOfWeek.setDate(now.getDate() + diff);
             endOfWeek.setHours(23, 59, 59, 999);
             return statusFilteredVisits.filter(v => {
-                const visitDate = new Date(`${v.visitDate}T00:00:00`);
+                const visitDate = new Date(v.visitDate + 'T00:00:00');
                 return visitDate >= now && visitDate <= endOfWeek;
             });
         }
@@ -283,53 +303,58 @@ export const UpcomingVisits: React.FC<UpcomingVisitsProps> = ({ visits, onEdit, 
             const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
             endOfMonth.setHours(23, 59, 59, 999);
             return statusFilteredVisits.filter(v => {
-                const visitDate = new Date(`${v.visitDate}T00:00:00`);
+                const visitDate = new Date(v.visitDate + 'T00:00:00');
                 return visitDate >= now && visitDate <= endOfMonth;
             });
         }
+
+        if (dateFilter === '2months') {
+            const twoMonthsFromNow = new Date(now);
+            twoMonthsFromNow.setMonth(now.getMonth() + 2);
+            twoMonthsFromNow.setHours(23, 59, 59, 999);
+            return statusFilteredVisits.filter(v => {
+                const visitDate = new Date(v.visitDate + 'T00:00:00');
+                return visitDate >= now && visitDate <= twoMonthsFromNow;
+            });
+        }
+
         return statusFilteredVisits;
     }, [visits, dateFilter, statusFilter]);
-    
-    const FilterButton = <T extends string>({ label, value, active, onClick }: { label: string; value: T; active: boolean; onClick: (v: T) => void; }) => {
-      // Pré-calculer la valeur ARIA pour éviter les erreurs de linter strict
-      const pressedValue = active ? 'true' : 'false';
-      
-      return (
-        <button
-          onClick={() => onClick(value)}
-          className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-300 w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50 ${
-            active 
-              ? 'bg-white dark:bg-card-dark shadow-md text-primary dark:text-primary-light scale-105' 
-              : 'text-text-muted dark:text-text-muted-dark hover:bg-white/70 dark:hover:bg-card-dark/70'
-          }`}
-          {...(active ? { 'aria-pressed': 'true' } : { 'aria-pressed': 'false' })}
-          aria-label={`Filtrer par ${label}`}
-        >
-          {label}
-        </button>
-      );
-    };
 
     return (
-        <div>
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <h2 className="text-3xl font-bold text-secondary dark:text-primary-light shrink-0">Prochaines visites</h2>
-                <div className="w-full md:w-auto flex flex-col gap-2">
-                    <div className="grid grid-cols-3 gap-2 bg-gray-100 dark:bg-dark p-1.5 rounded-xl">
-                        <FilterButton<DateFilterType> label="Toutes" value="all" active={dateFilter === 'all'} onClick={setDateFilter} />
-                        <FilterButton<DateFilterType> label="Cette semaine" value="week" active={dateFilter === 'week'} onClick={setDateFilter} />
-                        <FilterButton<DateFilterType> label="Ce mois-ci" value="month" active={dateFilter === 'month'} onClick={setDateFilter} />
-                    </div>
-                     <div className="grid grid-cols-4 gap-2 bg-gray-100 dark:bg-dark p-1.5 rounded-xl">
-                        <FilterButton<StatusFilterType> label="Actives" value="all" active={statusFilter === 'all'} onClick={setStatusFilter} />
-                        <FilterButton<StatusFilterType> label="En attente" value="pending" active={statusFilter === 'pending'} onClick={setStatusFilter} />
-                        <FilterButton<StatusFilterType> label="Confirmé" value="confirmed" active={statusFilter === 'confirmed'} onClick={setStatusFilter} />
-                        <FilterButton<StatusFilterType> label="Annulé" value="cancelled" active={statusFilter === 'cancelled'} onClick={setStatusFilter} />
-                    </div>
+        <div className="space-y-6">
+            <div className="flex flex-wrap justify-between items-center gap-4">
+                <h2 className="text-2xl font-bold text-text-main dark:text-text-main-dark">Visites à venir</h2>
+                <div className="flex flex-wrap gap-2">
+                    <FilterButton
+                        label="Toutes"
+                        value="all"
+                        active={dateFilter === 'all'}
+                        onClick={(v) => setDateFilter(v as DateFilterType)}
+                    />
+                    <FilterButton
+                        label="Cette semaine"
+                        value="week"
+                        active={dateFilter === 'week'}
+                        onClick={(v) => setDateFilter(v as DateFilterType)}
+                    />
+                    <FilterButton
+                        label="Ce mois"
+                        value="month"
+                        active={dateFilter === 'month'}
+                        onClick={(v) => setDateFilter(v as DateFilterType)}
+                    />
+                    <FilterButton
+                        label="2 prochains mois"
+                        value="2months"
+                        active={dateFilter === '2months'}
+                        onClick={(v) => setDateFilter(v as DateFilterType)}
+                    />
                 </div>
             </div>
-
-            {filteredVisits.length === 0 ? (
+            
+            <div className="mt-6">
+                {filteredVisits.length === 0 ? (
                 visits.length === 0 ? (
                     <div className="text-center py-12 px-6 bg-card-light dark:bg-card-dark rounded-lg shadow-md">
                         <CalendarIcon className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600" />
@@ -370,6 +395,7 @@ export const UpcomingVisits: React.FC<UpcomingVisitsProps> = ({ visits, onEdit, 
                     })}
                 </div>
             )}
+            </div>
         </div>
     );
 };

@@ -17,6 +17,7 @@
     "@capacitor/android": "^7.4.3",
     "@capacitor/cli": "^7.4.3",
     "@capacitor/core": "^7.4.3",
+    "@capacitor/filesystem": "^7.1.4",
     "@google/genai": "latest",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
