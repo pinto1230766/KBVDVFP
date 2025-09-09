@@ -631,170 +631,144 @@ Pinto Francisco
   },
   cv: {
     preparation: {
-      speaker: `Olá, Irmão {speakerName},
+      speaker: `Ola, Irmon {speakerName},
 
-Eu espero que você esteja bem.
+Esperu ki bu sta dretu.
 
-Eu sou o irmão Pinto Francisco, responsável pelo seu acolhimento.
+Nha nómi é Pinto Francisco, ki ta responsavel pa bu estadia.
 
-Nós estamos ansiosos para recebê-lo para o seu discurso público previsto para o dia *{visitDate}* às *{visitTime}*.
+Nu ta spera bu ku alegria pa bu diskursu públiku dia *{visitDate}* na ora *{visitTime}*.
 
-Para a organização, é o nosso irmão *{hostName}* quem se encarregará de recebê-lo. Se você tiver alguma pergunta ou necessidade específica (transporte, alojamento, refeição), não hesite em entrar em contato com ele.
+Irmon *{hostName}* é ki ta fika responsavel pa bu estadia. Si bu ten algun pergunta ô nesesidadi (transporte, alojamentu, kumida), pode fala ku el.
 
-Aqui estão os seus contatos:
-- Telefone: {hostPhone}
-- Endereço: {hostAddress}
+Kontatus di el:
+- Telfon: {hostPhone}
+- Morada: {hostAddress}
 
-Nós estamos ansiosos para passar esse momento com você.
+Nu ta spera pa odja-bu.
 
-Com amor fraterno.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`,
-      host: `Olá, Irmão {hostName},
+      host: `Ola, Irmon {hostName},
 
-Eu espero que você esteja bem.
+Esperu ki bu sta dretu.
 
-Eu sou o irmão Pinto Francisco, responsável pelo acolhimento.
+Nha nómi é Pinto Francisco, ki ta responsavel pa estadias.
 
-Eu estou entrando em contato com você sobre o acolhimento do nosso orador convidado, Irmão *{speakerName}*, que nos visitará no dia *{visitDate}* às *{visitTime}*.
+N ta skrebe pa kombina estadia di nos orador konvidadu, Irmon *{speakerName}*, ki ta benu-nos vizita dia *{visitDate}* na ora *{visitTime}*.
 
-Obrigado por se voluntariar. Você pode entrar em contato com ele para coordenar os detalhes da sua visita (transporte, refeição, alojamento)? O seu número é o {speakerPhone}.
+Obrigadu pa bu disponibilidade. Pode kontata-l pa kombina detalis di estadia (transporte, kumida, alojamentu)? Númeru di el é {speakerPhone}.
 
-Avise-me se você tiver alguma pergunta.
+Fala ku nha si bu ten algun pergunta.
 
-Obrigado pela sua hospitalidade.
-Com amor fraterno.
+Obrigadu pa bu hospitalidadi.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`
     },
     'reminder-7': {
-      speaker: `Olá, Irmão {speakerName},
+      speaker: `Ola, Irmon {speakerName},
 
-Eu espero que você esteja bem.
+Esperu ki bu sta dretu.
 
-Eu sou o irmão Pinto Francisco, responsável pelo seu acolhimento.
+É so un lembransa amiudu: bu diskursu públiku ku nos ta ser ja prósimu sima un semana, dia *{visitDate}* na ora *{visitTime}*.
 
-Este é um pequeno lembrete amigável para o seu discurso público entre nós, previsto para dentro de uma semana, no dia *{visitDate}* às *{visitTime}*.
+Irmon *{hostName}* ({hostPhone}) ta kontinua ser bu kontatu pa organizason.
 
-Irmão *{hostName}* ({hostPhone}) ainda é o seu contato para a organização.
+Nu ta spera pa odja-bu!
 
-Nós estamos ansiosos para recebê-lo.
-Até breve!
-
-Com amor fraterno.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`,
-      host: `Olá, Irmão {hostName},
+      host: `Ola, Irmon {hostName},
 
-Eu espero que você esteja bem.
+Esperu ki bu sta dretu.
 
-Eu sou o irmão Pinto Francisco, responsável pelo acolhimento.
+Nha nómi é Pinto Francisco, ki ta responsavel pa estadias.
 
-Pequeno lembrete amigável sobre o acolhimento do Irmão *{speakerName}*, previsto para dentro de uma semana, no dia *{visitDate}* às *{visitTime}*.
+É so un lembransa sobri estadia di Irmon *{speakerName}*, dia *{visitDate}* na ora *{visitTime}*.
 
-Não hesite em entrar em contato se você tiver alguma pergunta.
+Manda mensajen si bu ten algun pergunta.
 
-Obrigado novamente pela sua ajuda preciosa.
-Com amor fraterno.
+Obrigadu pa bu ajuda preciozu.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`
     },
     'reminder-2': {
-      speaker: `Olá, Irmão {speakerName},
+      speaker: `Ola, Irmon {speakerName},
 
-Eu espero que você esteja bem.
+Esperu ki bu sta dretu.
 
-Eu sou o irmão Pinto Francisco, responsável pelo seu acolhimento.
+So pa lembra: bu diskursu públiku ku nos ta ser ja dia *{visitDate}* na ora *{visitTime}*.
 
-Último lembrete antes do seu discurso público previsto para este fim de semana, no dia *{visitDate}* às *{visitTime}*.
+Irmon *{hostName}* ({hostPhone}) ta kontinua ser bu kontatu.
 
-Nós estamos realmente ansiosos para ouvi-lo. Faça uma boa viagem se você precisar se deslocar.
+Nu ta spera pa odja-bu sedu!
 
-Com amor fraterno.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`,
-      host: `Olá, Irmão {hostName},
+      host: `Ola, Irmon {hostName},
 
-Eu espero que você esteja bem.
+So pa lembra sobri estadia di Irmon *{speakerName}* dia *{visitDate}* na ora *{visitTime}*.
 
-Eu sou o irmão Pinto Francisco, responsável pelo acolhimento.
+Favor verifika detalis i manda mensajen si nesesariu.
 
-Último lembrete para o acolhimento do Irmão *{speakerName}* este fim de semana, no dia *{visitDate}* às *{visitTime}*.
-
-Tudo está em ordem do seu lado?
-
-Obrigado por tudo.
-Com amor fraterno.
+Obrigadu mas un bes!
+Ku amor fraternal.
 Pinto Francisco
 0777388914`
     },
     thanks: {
-      speaker: `Olá, Irmão {speakerName},
+      speaker: `Ola, Irmon {speakerName},
 
-Eu espero que você esteja bem.
+Muitu obrigadu pa bu vizita i pa bu diskursu ki fortalesenu.
 
-Eu sou o irmão Pinto Francisco, responsável pelo seu acolhimento.
+Foi un prazer te ku nos i nu ta spera pa odje-bu outra bes sedu.
 
-Apenas uma pequena palavra para agradecer novamente calorosamente pelo seu excelente discurso de domingo. Nós todos fomos muito encorajados.
-
-Nós esperamos que você tenha passado um bom momento entre nós e que sua volta tenha sido tranquila.
-
-Até logo.
-Com amor fraterno.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`,
-      host: `Olá, Irmão {hostName},
+      host: `Ola, Irmon {hostName},
 
-Eu espero que você esteja bem.
+Muitu obrigadu pa bu hospitalidadi pa Irmon *{speakerName}*.
 
-Eu sou o irmão Pinto Francisco, responsável pelo acolhimento.
+Bu djuda foi preciosa i nu ta spera pa pode konta kontigo outra bes.
 
-Um grande obrigado pela sua maravilhosa hospitalidade em relação ao Irmão *{speakerName}* este fim de semana. É graças a irmãos como você que nossos oradores se sentem tão bem recebidos.
-
-Sua ajuda foi muito apreciada.
-
-Com amor fraterno.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`
     },
     needs: {
-      speaker: `Olá, Irmão {speakerName},
+      speaker: `Ola, Irmon {speakerName},
 
-Eu espero que você esteja bem.
+Nu ta prepara pa bu vizita dia *{visitDate}* i nu meste sabi algus informasons:
 
-Eu sou o irmão Pinto Francisco, responsável pelo seu acolhimento.
+🚗 **Transporte**: Bu meste ajuda ku transporte? (buska na gare, aeroportu, etc.)
 
-Nós estamos ansiosos para recebê-lo para o seu discurso público previsto para o dia *{visitDate}* às *{visitTime}*.
+🏠 **Alojamentu**: Bu ke fika ku nos ô prefere otel?
 
-Para melhor organizar sua visita, poderia nos informar:
+🍽️ **Kumida**: Bu gostaria di kume ku nos? (sábadu noti, dumingu dia, etc.)
 
-🚗 **Transporte** : Você precisa de ajuda para o transporte? (pegar no aeroporto, etc.)
+👥 **Pessuas ku bu**: Kuantas pessoa ta ben ku bu?
 
-🏠 **Alojamento** : Você prefere ser alojado ou prefere um hotel?
+Manda mensajen ku bu preferensias pa nu pode djuda melor.
 
-🍽️ **Refeição** : Você gostaria de compartilhar refeições conosco? (sábado à noite, domingo ao meio-dia, etc.)
-
-👥 **Acompanhantes** : Quantas pessoas o acompanharão para esta visita?
-
-Obrigado por nos informar suas preferências para que possamos recebê-lo da melhor forma.
-
-Com amor fraterno.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`,
-      host: `Olá, Irmão {hostName},
+      host: `Ola, Irmon {hostName},
 
-Eu espero que você esteja bem.
+Nu ta prepara estadia di Irmon *{speakerName}* pa dia *{visitDate}*.
 
-Eu sou o irmão Pinto Francisco, responsável pelo acolhimento.
+Nu sta espera informasons di el sobri nesesidadis (transporte, alojamentu, kumida, númeru di pessoa).
 
-Nós estamos preparando o acolhimento do Irmão *{speakerName}* para a sua visita no dia *{visitDate}* às *{visitTime}*.
+Nhu ta avisa bu tan-lógu tive novidadis.
 
-Nós estamos aguardando suas respostas sobre suas necessidades específicas (transporte, alojamento, refeição, número de acompanhantes).
-
-Assim que tivermos essas informações, entraremos em contato com você para coordenar os detalhes do seu acolhimento.
-
-Obrigado pela sua disponibilidade.
-Com amor fraterno.
+Obrigadu pa bu disponibilidadi.
+Ku amor fraternal.
 Pinto Francisco
 0777388914`
     }
@@ -815,17 +789,19 @@ Si vous pouvez aider pour l'un de ces besoins (hébergement, repas, ou les deux)
 Votre hospitalité est grandement appréciée !
 
 « N’oubliez pas l’hospitalité, car grâce à elle certains ont sans le savoir logé des anges. » (Hébreux 13:2)`,
-  cv: `Olá, queridos irmãos e irmãs, ☀️
+  cv: `Ola, keridus irmons i irmans, ☀️
 
-Nós temos a alegria de receber em breve vários oradores visitantes. Nós estamos procurando famílias hospitaleiras para recebê-los.
+Nu sta ku alegria pa resibi algus oradoris visitantis. Nu ta procura famias ki pode djuda ku estadia.
 
-Aqui estão as visitas para as quais precisamos da sua ajuda:
+Eis kes visitas pa ki nu meste djuda:
 
 {visitList}
 
-Se você pode ajudar com uma dessas necessidades (alojamento, refeição, ou as duas), por favor responda especificando o nome do orador e o que você pode oferecer.
+Si bu pode djuda, favor fala ku nha o mais sedu posivel.
 
-Sua hospitalidade é muito apreciada!
+Muitu obrigadu pa bu generosidadi i hospitalidadi!
 
-« Não se esqueçam da hospitalidade, pois graças a ela alguns, sem o saber, hospedaram anjos. » (Hebreus 13:2)`
+Ku amor fraternal,
+Pinto Francisco
+0777388914`
 };
