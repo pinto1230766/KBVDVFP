@@ -251,7 +251,17 @@ const App: React.FC = () => {
                 <div className="px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-3 sm:py-4 relative">
                         <div className="flex items-center space-x-3">
-                            <AppLogoIcon className="h-12 w-12 sm:h-16 sm:w-16 text-white" />
+                            <img 
+                                src="/icons/logo.png" 
+                                alt="Logo" 
+                                className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
+                                onError={(e) => {
+                                    // Si l'image ne charge pas, afficher l'icône par défaut
+                                    const target = e.target as HTMLImageElement;
+                                    target.onerror = null;
+                                    target.src = '/icons/icon.png'; // Assurez-vous que cette icône existe
+                                }}
+                            />
                         </div>
 
                         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden sm:block pointer-events-none">
