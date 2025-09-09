@@ -65,7 +65,7 @@ export interface Visit {
   accommodation: string;
   meals: string;
   notes?: string;
-  status: 'confirmed' | 'pending' | 'cancelled';
+  status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
   attachments?: { name: string; dataUrl: string; size: number }[];
   locationType?: 'physical' | 'zoom' | 'streaming';
   communicationStatus?: {

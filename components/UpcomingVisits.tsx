@@ -167,8 +167,12 @@ const VisitCard: React.FC<{ visit: Visit; onEdit: (visit: Visit) => void; onDele
                              <div className="mt-4 w-full bg-gray-50 dark:bg-dark p-3 rounded-lg space-y-2">
                                 <h4 className="text-xs font-bold text-left text-text-muted dark:text-text-muted-dark uppercase">Check-list Comms</h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-left">
-                                    <ChecklistItem label="Prépa Orateur" done={!!prep.speaker} icon={EnvelopeIcon} />
-                                    <ChecklistItem label="Prépa Accueil" done={!!prep.host} icon={EnvelopeIcon} />
+                                    {!(visit.host === 'PAS BESOIN' || visit.accommodation === 'PAS BESOIN') && (
+                                        <>
+                                            <ChecklistItem label="Prépa Orateur" done={!!prep.speaker} icon={EnvelopeIcon} />
+                                            <ChecklistItem label="Prépa Accueil" done={!!prep.host} icon={EnvelopeIcon} />
+                                        </>
+                                    )}
                                     <ChecklistItem label="Rappel J-7" done={!!reminder7.speaker || !!reminder7.host} icon={BellIcon} />
                                     <ChecklistItem label="Remerciements" done={!!thanks.speaker || !!thanks.host} icon={SparklesIcon} />
                                 </div>

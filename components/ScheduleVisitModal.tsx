@@ -32,13 +32,15 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
     const [accommodation, setAccommodation] = useState('');
     const [meals, setMeals] = useState('');
     const [notes, setNotes] = useState('');
-    const [status, setStatus] = useState<'confirmed' | 'pending' | 'cancelled'>('pending');
+    const [status, setStatus] = useState<'confirmed' | 'pending' | 'cancelled' | 'completed'>('pending');
     const [attachments, setAttachments] = useState<{ name: string; dataUrl: string; size: number }[]>([]);
     const [talkNoOrType, setTalkNoOrType] = useState<string | null>('');
     const [talkTheme, setTalkTheme] = useState<string | null>('');
     const [locationType, setLocationType] = useState<'physical' | 'zoom' | 'streaming'>('physical');
     const [isGenerating, setIsGenerating] = useState(false);
     const [dateConflict, setDateConflict] = useState<Visit | null>(null);
+    const [noAccommodationNeeded, setNoAccommodationNeeded] = useState(false);
+    const [noMealsNeeded, setNoMealsNeeded] = useState(false);
     const { addToast } = useToast();
     
     const currentSpeaker = visit || speaker;
@@ -55,7 +57,9 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
             setVisitTime(visit.visitTime);
             setHost(visit.host);
             setAccommodation(visit.accommodation);
-            setMeals(visit.meals);
+            setNoAccommodationNeeded(visit.accommodation === 'Logé par famille/amis' || visit.accommodation === 'PAS BESOIN');
+            setMeals(visit.meals === 'Repas pris en charge par famille/amis' ? 'Repas pris en charge par famille/amis' : visit.meals);
+            setNoMealsNeeded(visit.meals === 'Repas pris en charge par famille/amis');
             setNotes(visit.notes || '');
             setStatus(visit.status || 'pending');
             setAttachments(visit.attachments || []);
@@ -72,7 +76,9 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
             setVisitTime('14:30');
             setHost(UNASSIGNED_HOST);
             setAccommodation(isLocalSpeaker ? 'Sur place' : '');
+            setNoAccommodationNeeded(false);
             setMeals(isLocalSpeaker ? 'Sur place' : '');
+            setNoMealsNeeded(false);
             setNotes('');
             setStatus('pending'); // Default status for new visit
             setAttachments([]);
@@ -356,6 +362,7 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
                                         <label htmlFor="host" className="block text-sm font-medium text-text-muted dark:text-text-muted-dark">Accueil par</label>
                                         <div className="grid grid-cols-2 gap-2 mt-1">
                                             <select id="host" value={host} onChange={(e) => setHost(e.target.value)} className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary bg-card-light dark:bg-dark">
+                                                <option value="PAS BESOIN">PAS BESOIN</option>
                                                 <option value={UNASSIGNED_HOST}>{UNASSIGNED_HOST}</option>
                                                 <optgroup label="Disponible">
                                                     {availableHosts.map(h => <option key={h.nom} value={h.nom}>{h.nom}</option>)}
@@ -366,8 +373,14 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
                                                     </optgroup>
                                                 )}
                                             </select>
-                                            <button type="button" onClick={handleAddNewHost} className="p-2 bg-primary/10 text-primary rounded-md hover:bg-primary/20 flex-shrink-0 w-full flex items-center justify-center" title="Ajouter un nouveau contact pour l'accueil">
-                                                <PlusIcon className="w-5 h-5 mr-2" />
+                                            <button 
+                                                type="button" 
+                                                onClick={handleAddNewHost} 
+                                                disabled={host === 'PAS BESOIN'}
+                                                className={`p-2 rounded-md flex-shrink-0 w-full flex items-center justify-center ${host === 'PAS BESOIN' ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-primary/10 text-primary hover:bg-primary/20'}`} 
+                                                title={host === 'PAS BESOIN' ? "Désactivé car 'PAS BESOIN' est sélectionné" : "Ajouter un nouveau contact pour l'accueil"}
+                                            >
+                                                <PlusIcon className="w-5 h-5" />
                                                 Ajouter
                                             </button>
                                         </div>
@@ -376,12 +389,60 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
                                     {!isLocalSpeaker ? (
                                         <>
                                             <div>
-                                                <label htmlFor="accommodation" className="block text-sm font-medium text-text-muted dark:text-text-muted-dark">Hébergement</label>
-                                                <input type="text" id="accommodation" value={accommodation} onChange={(e) => setAccommodation(e.target.value)} className="mt-1 block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary bg-card-light dark:bg-dark" placeholder="Ex: Chez l'hôte, hôtel, pas nécessaire..." />
+                                                <div className="flex items-center mb-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="noAccommodationNeeded"
+                                                        checked={accommodation === 'Logé par famille/amis'}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setAccommodation('Logé par famille/amis');
+                                                            } else {
+                                                                setAccommodation('');
+                                                            }
+                                                        }}
+                                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                                    />
+                                                    <label htmlFor="noAccommodationNeeded" className="ml-2 block text-sm text-text-muted dark:text-text-muted-dark">
+                                                        Pas besoin d'hébergement: l'orateur sera logé par la famille ou des amis
+                                                    </label>
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    id="accommodation"
+                                                    value={accommodation}
+                                                    onChange={(e) => setAccommodation(e.target.value)}
+                                                    className="mt-1 block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary bg-card-light dark:bg-dark"
+                                                    placeholder="Ex: PAS BESOIN, Chez l'hôte, Hôtel, Autre..."
+                                                />
                                             </div>
                                             <div>
-                                                <label htmlFor="meals" className="block text-sm font-medium text-text-muted dark:text-text-muted-dark">Repas</label>
-                                                <input type="text" id="meals" value={meals} onChange={(e) => setMeals(e.target.value)} className="mt-1 block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary bg-card-light dark:bg-dark" placeholder="Ex: Samedi soir, Dimanche midi..." />
+                                                <div className="flex items-center mb-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="noMealsNeeded"
+                                                        checked={meals === 'Repas pris en charge par famille/amis'}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setMeals('Repas pris en charge par famille/amis');
+                                                            } else {
+                                                                setMeals('');
+                                                            }
+                                                        }}
+                                                        className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                                    />
+                                                    <label htmlFor="noMealsNeeded" className="ml-2 block text-sm text-text-muted dark:text-text-muted-dark">
+                                                        Pas besoin de repas: les repas seront pris en charge par la famille ou des amis
+                                                    </label>
+                                                </div>
+                                                <input 
+                                                    type="text" 
+                                                    id="meals" 
+                                                    value={meals} 
+                                                    onChange={(e) => setMeals(e.target.value)} 
+                                                    className="mt-1 block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary bg-card-light dark:bg-dark" 
+                                                    placeholder="Ex: Samedi soir, Dimanche midi..."
+                                                />
                                             </div>
                                         </>
                                     ) : (
@@ -412,9 +473,10 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
                             </div>
                              <div>
                                 <label htmlFor="status" className="block text-sm font-medium text-text-muted dark:text-text-muted-dark">Statut</label>
-                                <select id="status" value={status} onChange={(e) => setStatus(e.target.value as Visit['status'])} className="mt-1 block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary bg-card-light dark:bg-dark">
+                                <select id="status" value={status} onChange={(e) => setStatus(e.target.value as 'confirmed' | 'pending' | 'cancelled' | 'completed')} className="mt-1 block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary bg-card-light dark:bg-dark">
                                     <option value="pending">En attente</option>
                                     <option value="confirmed">Confirmé</option>
+                                    <option value="completed">Terminé</option>
                                     <option value="cancelled">Annulé</option>
                                 </select>
                             </div>
