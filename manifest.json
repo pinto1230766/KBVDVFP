@@ -1,0 +1,23 @@
+{
+  "short_name": "DV.FP Visiteurs",
+  "name": "Gestion Visiteurs TJ - DV.FP",
+  "description": "Application officielle pour la gestion des orateurs visiteurs - Département Visites et Formation Pratique",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#2E5A87",
+  "background_color": "#E8E3D3"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Gestion Visiteurs TJ",
+  "description": "Une application pour gérer l'accueil des orateurs visiteurs pour un groupe d'étude des Témoins de Jéhovah, incluant la planification, l'accueil, les repas et l'hébergement.",
+  "requestFramePermissions": []
+}
