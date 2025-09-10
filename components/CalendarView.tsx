@@ -1,5 +1,3 @@
-
-
 import React, { useState, useMemo } from 'react';
 import { Visit, Speaker } from '../types';
 import { ChevronLeftIcon, ChevronRightIcon, UserIcon, EditIcon, InformationCircleIcon, HomeIcon, UtensilsIcon, PaperclipIcon, DocumentTextIcon, VideoCameraIcon } from './Icons';
@@ -137,61 +135,81 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onEditVisit }) => {
                 {daysInMonth.map((day, index) => {
                     if (!day) return <div key={`empty-${index}`} className="border rounded-lg border-transparent"></div>;
                     
-                    const year = day.getFullYear();
-                    const month = String(day.getMonth() + 1).padStart(2, '0');
-                    const date = String(day.getDate()).padStart(2, '0');
-                    const dayStr = `${year}-${month}-${date}`;
+                    try {
+                        const year = day.getFullYear();
+                        const month = String(day.getMonth() + 1).padStart(2, '0');
+                        const date = String(day.getDate()).padStart(2, '0');
+                        const dayStr = `${year}-${month}-${date}`;
 
-                    const dayData = dataByDate.get(dayStr);
-                    const visit = dayData?.visit;
-                    const isToday = new Date().toDateString() === day.toDateString();
-                    const hasEvent = dayData && (dayData.visit || dayData.history.length > 0);
-                    const visitStatus = visit?.status;
-                    const isZoom = visit?.locationType === 'zoom';
-                    const isLocal = visit?.congregation.toLowerCase().includes('lyon');
+                        const dayData = dataByDate.get(dayStr);
+                        const visit = dayData?.visit;
+                        const isToday = new Date().toDateString() === day.toDateString();
+                        const hasEvent = dayData && (dayData.visit || (dayData.history && dayData.history.length > 0));
+                        const visitStatus = visit?.status || '';
+                        const isZoom = visit?.locationType === 'zoom';
+                        const isLocal = visit?.congregation?.toLowerCase().includes('lyon');
 
-                    const cellClasses = `p-1 h-20 sm:h-24 border rounded-lg transition-colors flex flex-col items-center justify-start ${hasEvent ? 'cursor-pointer' : ''} ${
-                        visitStatus ? statusStyles[visitStatus].bg :
-                        (dayData?.history.length ?? 0) > 0 ? 'bg-gray-50 hover:bg-gray-100 border-gray-200 dark:bg-gray-700/50 dark:hover:bg-gray-700 dark:border-gray-700' : 'bg-card-light dark:bg-card-dark border-gray-100 dark:border-dark'
-                    }`;
+                        const cellClasses = `p-1 h-20 sm:h-24 border rounded-lg transition-colors flex flex-col items-center justify-start ${
+                            hasEvent ? 'cursor-pointer' : ''
+                        } ${
+                            visitStatus && statusStyles[visitStatus] ? statusStyles[visitStatus].bg :
+                            (dayData?.history?.length ?? 0) > 0 ? 'bg-gray-50 hover:bg-gray-100 border-gray-200 dark:bg-gray-700/50 dark:hover:bg-gray-700 dark:border-gray-700' : 
+                            'bg-card-light dark:bg-card-dark border-gray-100 dark:border-dark'
+                        }`;
 
-                    return (
-                        <div 
-                            key={day.toString()} 
-                            onClick={() => handleDayClick(day, dayData)}
-                            className={cellClasses}
-                        >
-                            <span className={`w-7 h-7 flex items-center justify-center rounded-full text-sm ${isToday ? 'bg-primary text-white font-bold' : 'text-text-main dark:text-text-main-dark'}`}>
-                                {day.getDate()}
-                            </span>
-                             {visit && visitStatus && (
-                                <div className="mt-1 w-full px-1 text-center overflow-hidden flex flex-col items-center gap-1">
-                                    <span className={`inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-tight ${statusBadgeStyles[visitStatus]?.classes}`}>
-                                        {statusBadgeStyles[visitStatus]?.text}
-                                    </span>
-                                    <p className={`text-xs font-semibold text-text-main dark:text-text-main-dark leading-tight break-words ${visitStatus === 'cancelled' ? 'line-through' : ''}`} title={visit.nom}>
-                                        {visit.nom}
-                                    </p>
-                                    <div className="flex items-center justify-center gap-1.5 mt-0.5">
-                                        {/* Fix: Wrapped icons in a span with a title attribute to fix prop error */}
-                                        {isZoom && <span title="Visite par Zoom"><VideoCameraIcon className="w-3 h-3 text-indigo-500" /></span>}
-                                        {isLocal && !isZoom && <span title="Orateur Local"><HomeIcon className="w-3 h-3 text-blue-500" /></span>}
+                        return (
+                            <div 
+                                key={day.toString()} 
+                                onClick={() => dayData && handleDayClick(day, dayData)}
+                                className={cellClasses}
+                            >
+                                <span className={`w-7 h-7 flex items-center justify-center rounded-full text-sm ${
+                                    isToday ? 'bg-primary text-white font-bold' : 'text-text-main dark:text-text-main-dark'
+                                }`}>
+                                    {day.getDate()}
+                                </span>
+                                
+                                {visit && visitStatus && statusStyles[visitStatus] && (
+                                    <div className="mt-1 w-full px-1 text-center overflow-hidden flex flex-col items-center gap-1">
+                                        <span className={`inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-tight ${
+                                            statusBadgeStyles[visitStatus]?.classes || 'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300'
+                                        }`}>
+                                            {statusBadgeStyles[visitStatus]?.text || 'Inconnu'}
+                                        </span>
+                                        <p className={`text-xs font-semibold text-text-main dark:text-text-main-dark leading-tight break-words ${
+                                            visitStatus === 'cancelled' ? 'line-through' : ''
+                                        }`} title={visit.nom || ''}>
+                                            {visit.nom || 'Visite sans nom'}
+                                        </p>
+                                        <div className="flex items-center justify-center gap-1.5 mt-0.5">
+                                            {isZoom && <span title="Visite par Zoom"><VideoCameraIcon className="w-3 h-3 text-indigo-500" /></span>}
+                                            {isLocal && !isZoom && <span title="Orateur Local"><HomeIcon className="w-3 h-3 text-blue-500" /></span>}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                             {dayData?.history && dayData.history.length > 0 && !dayData.visit && (
-                                <div className="mt-1 w-full px-1 text-center overflow-hidden flex flex-col items-center gap-1">
-                                    <span className="inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-tight bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                                        Passé
-                                    </span>
-                                    <p className="text-xs font-semibold text-text-muted dark:text-text-muted-dark leading-tight break-words" title={dayData.history.map(s => s.nom).join(', ')}>
-                                        {dayData.history[0].nom}
-                                        {dayData.history.length > 1 ? ` +${dayData.history.length - 1}` : ''}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    );
+                                )}
+                                
+                                {dayData?.history?.length > 0 && !dayData.visit && (
+                                    <div className="mt-1 w-full px-1 text-center overflow-hidden flex flex-col items-center gap-1">
+                                        <span className="inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-tight bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                            Passé
+                                        </span>
+                                        <p className="text-xs font-semibold text-text-muted dark:text-text-muted-dark leading-tight break-words" 
+                                           title={dayData.history.map(s => s?.nom).filter(Boolean).join(', ')}>
+                                            {dayData.history[0]?.nom || 'Orateur inconnu'}
+                                            {dayData.history.length > 1 ? ` +${dayData.history.length - 1}` : ''}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    } catch (error) {
+                        console.error('Error rendering calendar cell:', error);
+                        return (
+                            <div key={`error-${index}`} className="p-1 h-20 sm:h-24 border border-red-300 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+                                <span className="text-xs text-red-500 dark:text-red-300">Erreur</span>
+                            </div>
+                        );
+                    }
                 })}
             </div>
              {selectedDay && selectedDay.visit && (
