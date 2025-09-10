@@ -264,3 +264,5 @@ Ce projet est sous **licence MIT** - voir le fichier [LICENSE](LICENSE) pour dé
 ### 🏛️ Développé avec ❤️ pour la communauté des Témoins de Jéhovah
 
 Application officielle du Groupe Témoin de Jéhovah Capverdien - Lyon (DV.FP)
+#   K B V D V F P  
+ 
