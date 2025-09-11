@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Fond bleu principal -->
+  <rect width="120" height="120" rx="18" fill="#2E5A87" />
+  
+  <!-- Cercle central -->
+  <circle cx="60" cy="60" r="35" fill="#2E5A87" stroke="#E8E3D3" stroke-width="2" />
+  
+  <!-- Couronne de laurier externe -->
+  <g transform="translate(60,60)">
+    <!-- Branches de laurier gauche -->
+    <path d="M-25,-20 Q-28,-18 -30,-15 Q-32,-12 -30,-10 Q-28,-8 -25,-10 Q-23,-12 -25,-15 Z" fill="#2E5A87" />
+    <path d="M-27,-15 Q-30,-13 -32,-10 Q-34,-7 -32,-5 Q-30,-3 -27,-5 Q-25,-7 -27,-10 Z" fill="#2E5A87" />
+    <path d="M-29,-10 Q-32,-8 -34,-5 Q-36,-2 -34,0 Q-32,2 -29,0 Q-27,-2 -29,-5 Z" fill="#2E5A87" />
+    <path d="M-31,-5 Q-34,-3 -36,0 Q-38,3 -36,5 Q-34,7 -31,5 Q-29,3 -31,0 Z" fill="#2E5A87" />
+    <path d="M-33,0 Q-36,2 -38,5 Q-40,8 -38,10 Q-36,12 -33,10 Q-31,8 -33,5 Z" fill="#2E5A87" />
+    
+    <!-- Branches de laurier droite -->
+    <path d="M25,-20 Q28,-18 30,-15 Q32,-12 30,-10 Q28,-8 25,-10 Q23,-12 25,-15 Z" fill="#2E5A87" />
+    <path d="M27,-15 Q30,-13 32,-10 Q34,-7 32,-5 Q30,-3 27,-5 Q25,-7 27,-10 Z" fill="#2E5A87" />
+    <path d="M29,-10 Q32,-8 34,-5 Q36,-2 34,0 Q32,2 29,0 Q27,-2 29,-5 Z" fill="#2E5A87" />
+    <path d="M31,-5 Q34,-3 36,0 Q38,3 36,5 Q34,7 31,5 Q29,3 31,0 Z" fill="#2E5A87" />
+    <path d="M33,0 Q36,2 38,5 Q40,8 38,10 Q36,12 33,10 Q31,8 33,5 Z" fill="#2E5A87" />
+  </g>
+  
+  <!-- Couronne de blé dorée interne -->
+  <g transform="translate(60,60)">
+    <!-- Épis de blé gauche -->
+    <path d="M-18,-12 Q-20,-10 -18,-8 Q-16,-6 -14,-8 Q-12,-10 -14,-12 Z" fill="#D4A574" />
+    <path d="M-16,-8 Q-18,-6 -16,-4 Q-14,-2 -12,-4 Q-10,-6 -12,-8 Z" fill="#D4A574" />
+    <path d="M-14,-4 Q-16,-2 -14,0 Q-12,2 -10,0 Q-8,-2 -10,-4 Z" fill="#D4A574" />
+    <path d="M-12,0 Q-14,2 -12,4 Q-10,6 -8,4 Q-6,2 -8,0 Z" fill="#D4A574" />
+    <path d="M-10,4 Q-12,6 -10,8 Q-8,10 -6,8 Q-4,6 -6,4 Z" fill="#D4A574" />
+    
+    <!-- Épis de blé droite -->
+    <path d="M18,-12 Q20,-10 18,-8 Q16,-6 14,-8 Q12,-10 14,-12 Z" fill="#D4A574" />
+    <path d="M16,-8 Q18,-6 16,-4 Q14,-2 12,-4 Q10,-6 12,-8 Z" fill="#D4A574" />
+    <path d="M14,-4 Q16,-2 14,0 Q12,2 10,0 Q8,-2 10,-4 Z" fill="#D4A574" />
+    <path d="M12,0 Q14,2 12,4 Q10,6 8,4 Q6,2 8,0 Z" fill="#D4A574" />
+    <path d="M10,4 Q12,6 10,8 Q8,10 6,8 Q4,6 6,4 Z" fill="#D4A574" />
+    
+    <!-- Fleur centrale dorée -->
+    <circle cx="0" cy="8" r="3" fill="#D4A574" />
+    <path d="M-2,6 L0,4 L2,6 L0,8 Z" fill="#B8935F" />
+  </g>
+  
+  <!-- Texte JW au centre -->
+  <text x="60" y="68" text-anchor="middle" font-family="serif" font-size="22" font-weight="bold" fill="white">JW</text>
+  
+  <!-- Texte DV.FP en bas -->
+  <text x="60" y="105" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="white">DV.FP</text>
+</svg>
